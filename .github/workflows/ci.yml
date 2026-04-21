@@ -37,7 +37,7 @@ jobs:
 
       # 4. Run unit tests
       - name: Run tests
-        run: ./gradlew clean test
+        run: ./run-tests.sh
 
       # 5. Upload test reports (available in GitHub Actions UI)
       - name: Upload JUnit reports

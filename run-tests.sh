@@ -5,6 +5,9 @@ set -e
 
 echo "Running backend tests..."
 
+#Make sure java is installed
+# Make sure Gradle wrapper is executable
+#
 chmod +x ./gradlew
 ./gradlew clean test
 
