@@ -37,7 +37,7 @@ jobs:
 
       - name: Run tests
         if: steps.gradle-check.outputs.exists == 'true'
-        run: ./run-tests.sh
+        run: bash ./run-tests.sh
 
       - name: Upload JUnit reports
         if: always() && steps.gradle-check.outputs.exists == 'true'
