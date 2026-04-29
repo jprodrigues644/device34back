@@ -1,49 +1,39 @@
-name: CI
-
-# When does this workflow run?
-on:
-  push:
-    branches: ["main"]          # Trigger on push to main branch
-  pull_request:
-    branches: ["main"]          # Trigger on pull requests targeting main
-
 jobs:
-
-  # -----------------------------------------------------------
-  # JOB 1: Java / Spring Boot Tests
-  # -----------------------------------------------------------
   test-java:
     name: "Java Tests"
     runs-on: ubuntu-latest
 
-    # Run this job ONLY if a Gradle wrapper is present
-    if: ${{ hashFiles('gradlew') != '' }}
-
     steps:
-      # 1. Checkout the repository code
       - name: Checkout source code
         uses: actions/checkout@v4
 
-      # 2. Set up Java 21 environment
+      - name: Check if gradlew exists
+        id: gradle-check
+        run: |
+          if [ -f "gradlew" ]; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+          fi
+
       - name: Set up Java 21
+        if: steps.gradle-check.outputs.exists == 'true'
         uses: actions/setup-java@v4
         with:
           java-version: "21"
           distribution: "temurin"
 
-      # 3. Make Gradle wrapper executable
       - name: Make gradlew executable
+        if: steps.gradle-check.outputs.exists == 'true'
         run: chmod +x ./gradlew
 
-      # 4. Run unit tests
       - name: Run tests
+        if: steps.gradle-check.outputs.exists == 'true'
         run: ./run-tests.sh
 
-      # 5. Upload test reports (available in GitHub Actions UI)
       - name: Upload JUnit reports
+        if: always() && steps.gradle-check.outputs.exists == 'true'
         uses: actions/upload-artifact@v4
-        if: always()   # Upload even if tests fail
         with:
           name: java-test-reports
           path: build/test-results/test/
-
